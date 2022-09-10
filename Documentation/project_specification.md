@@ -1,4 +1,4 @@
-Language: Python  
+Programming language: Python  
 Other languages I know: C++  
 Documentation language: English  
 Degree programme: Tietojenkäsittelyntieteen kandidaatti (TKT)  
