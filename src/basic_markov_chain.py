@@ -60,6 +60,36 @@ class chain:
             neighbors.append((row_i, col_i+1))
         return neighbors
 
+    def pick_color(self, neighbors, image):
+        possibilities = {}
+        count = 0
+        #print(neighbors)
+        for neighbor in neighbors:
+            a = image[neighbor[0]][neighbor[1]]
+            #print(a)
+            if a == -1:
+                continue
+            
+            count+=1
+            for possibility in self.adj[a]:
+                if (possibility[0] not in possibilities):
+                    possibilities[possibility[0]] = possibility[1]
+                else:
+                    possibilities[possibility[0]] * (possibility[1]*2)
+        
+        values = []
+        probs = ()
+        if len(possibilities) == 0:
+            rand_val = random.randint(0,self.n-1)
+        else:
+            for a in possibilities.keys():
+                values.append(a)
+                probs+=(int(possibilities[a]*100),)
+                
+            rand_val = random.choices(values, weights=probs, k=count)[0]
+        
+        return rand_val
+
     def generate_image(self):
         image = [None] * self.n
         for r in range(self.n):
@@ -76,13 +106,21 @@ class chain:
             #print("queue_size: " + str(queue.size))
             #print("pop()")
             pos = queue.pop()
-            print(pos)
+            neighbors = self.get_neighbors(pos)
+            image[pos[0]][pos[1]] = self.pick_color(neighbors, image)
 
-            for neighbor in self.get_neighbors(pos):
+            for neighbor in neighbors:
                 if neighbor not in visited:
                     visited[neighbor] = True
                     #print("add: " + str(neighbor))
                     queue.add(neighbor)
+        self.print_image(image)
+
+    def print_image(self, image):
+        for i, row in enumerate(image):
+            for j, a in enumerate(row):
+                print(a, end=", ")
+            print()
 
     def print(self):
         for a in range(self.n):
@@ -127,7 +165,7 @@ def collect_edges(image):
 
 
 
-inp = [[0, 1, 2, 3], [1, 1, 0, 3], [0, 1, 3, 3], [2, 2, 2, 3]]
+inp = [[0, 1, 0, 1], [2, 0, 2, 0], [0, 1, 0, 3], [2, 0, 2, 3]]
 
 graph = collect_edges(inp)
 
