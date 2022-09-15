@@ -32,20 +32,19 @@ class chain:
         self.adj = [None] * n
         self.lengths = [0] * n
         for i in range(n):
-            self.adj[i] = []
+            self.adj[i] = [0] *n
             #print(i)
         
         for (a, b, w) in edges:
-            self.adj[a].append([b, w])
+            self.adj[a][b] = w
             self.lengths[a] += w
         
         self.calculate_possibities()
 
     def calculate_possibities(self):
         for a in range(self.n):
-            a_len = len(self.adj[a])
-            for j in range(a_len):
-                self.adj[a][j][1] /= self.lengths[a]
+            for b in range(self.n):
+                self.adj[a][b] /= self.lengths[a]
 
     def get_neighbors(self, pos):
         row_i, col_i = pos
@@ -62,6 +61,7 @@ class chain:
 
     def pick_color(self, neighbors, image):
         possibilities = {}
+        counter = {}
         count = 0
         #print(neighbors)
         for neighbor in neighbors:
@@ -71,11 +71,17 @@ class chain:
                 continue
             
             count+=1
-            for possibility in self.adj[a]:
-                if (possibility[0] not in possibilities):
-                    possibilities[possibility[0]] = possibility[1]
+            for b in range(self.n):
+                if (b not in counter):
+                    counter[b] = 1
                 else:
-                    possibilities[possibility[0]] * (possibility[1]*2)
+                    counter[b] += 1
+                if (b not in possibilities):
+                    possibilities[b] = self.adj[a][b]
+                else:
+                    possibilities[b] *= (self.adj[a][b]*counter[b])
+        
+    
         
         values = []
         probs = ()
@@ -84,9 +90,10 @@ class chain:
         else:
             for a in possibilities.keys():
                 values.append(a)
-                probs+=(int(possibilities[a]*100),)
-                
-            rand_val = random.choices(values, weights=probs, k=count)[0]
+                probs+=(int(possibilities[a]*100) ,)
+            
+            rand_val = random.choices(values, weights=probs, k=1)[0]
+            #print(rand_val)
         
         return rand_val
 
@@ -124,8 +131,8 @@ class chain:
 
     def print(self):
         for a in range(self.n):
-            for j in range(len(self.adj[a])):
-                b, w = self.adj[a][j]
+            for b in range(self.n):
+                w = self.adj[a][b]
                 print("(" + str(a) + "," + str(b) + ")" + " : " + str(w))
 
 
