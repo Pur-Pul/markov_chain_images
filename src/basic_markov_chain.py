@@ -26,7 +26,7 @@ class Queue:
         self.size -= 1
         return to_return
 
-class chain:
+class Chain:
     def __init__(self, edges, n):
         self.n = n
         self.adj = [None] * n
@@ -44,6 +44,8 @@ class chain:
     def calculate_possibities(self):
         for a in range(self.n):
             for b in range(self.n):
+                if self.lengths[a] == 0:
+                    continue
                 self.adj[a][b] /= self.lengths[a]
 
     def get_neighbors(self, pos):
@@ -176,7 +178,7 @@ inp = [[0, 1, 0, 1], [2, 0, 2, 0], [0, 1, 0, 3], [2, 0, 2, 3]]
 
 graph = collect_edges(inp)
 
-new_chain = chain(graph, len(inp))
+new_chain = Chain(graph, len(inp))
 new_chain.print()
 print()
 new_chain.generate_image()
