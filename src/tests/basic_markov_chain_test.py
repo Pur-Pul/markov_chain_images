@@ -28,12 +28,47 @@ class TestChain(unittest.TestCase):
                 edge_count[i[0]] += i[2]
             else:
                 edge_count[i[0]] = i[2]
-
+        
+        adj_template = [None]*self.n
         for a in range(self.n):
+            adj_template[a] = [None]*self.n
             for b in range(self.n):
                 if (edge_count[a]) > 0:
-                    self.assertEqual(self.new_chain.adj[a][b], frequency[(a,b)]/edge_count[a])
+                    adj_template[a][b] = frequency[(a,b)]/edge_count[a]
                 else:
-                    self.assertEqual(self.new_chain.adj[a][b], frequency[(a,b)])
+                    adj_template[a][b] = frequency[(a,b)]
+        self.assertEqual(adj_template, self.new_chain.adj)
+    
+    def test_neighbours_collected(self):
+        image_size = (100, 100)
+        
+        template = []
+        ans = []
+        i=0
+        while(True):
+            pos = (random.randint(0, image_size[0]), random.randint(0, image_size[1]))
+            ans = self.new_chain.get_neighbours(pos, image_size)
+            row_i, col_i = pos
+            template = []
+            if row_i > 0:
+                template.append((row_i-1, col_i))
+            if row_i < image_size[1]-1:
+                template.append((row_i+1, col_i))
+            if col_i > 0:
+                template.append((row_i, col_i-1))
+            if col_i < image_size[0]-1:
+                template.append((row_i, col_i+1))
+            if (template != ans or i > 10):
+                break
+            i+=1
+        
+        self.assertNotEqual(template, ans)
+        
+        
+        ans.sort()
+        template.sort()
+        self.assertEqual(template, ans)
+
+
 
 

@@ -1,6 +1,6 @@
 import random
-
-
+from PIL import Image
+import os
 
 class Node:
     def __init__(self, value):
@@ -30,12 +30,12 @@ class Queue:
         Args:
             value (_type_): The value of the node.
         """
+        new_node = Node(value)
         if self.f_node == None:
-            self.f_node = Node(value)
-            self.end = self.f_node
+            self.f_node = self.end = new_node
         else:
-            self.end.next = Node(value)
-            self.end = self.end.next
+            self.end.next = new_node
+            self.end = new_node
         self.size += 1
     def pop(self):
         """Pops the first node from the queue and returns its value.
@@ -43,6 +43,24 @@ class Queue:
         Returns:
             value: The value of the popped node.
         """
+        to_return = self.f_node.value
+        self.f_node = self.f_node.next
+        self.size -= 1
+        return to_return
+
+class Stack:
+    def __init__(self):
+        self.f_node = None
+        self.size = 0
+    def add(self, value):
+        new_node = Node(value)
+        if self.f_node == None:
+            self.f_node = new_node
+        else:
+            new_node.next = self.f_node
+            self.f_node = new_node
+        self.size += 1
+    def pop(self):
         to_return = self.f_node.value
         self.f_node = self.f_node.next
         self.size -= 1
@@ -80,102 +98,89 @@ class Chain:
                     continue
                 self.adj[a][b] /= self.lengths[a]
 
-    def get_neighbors(self, pos):
-        """Checks neighbors of the given position and returns their coordinates.
+    def get_neighbours(self, pos, image_size):
+        """Checks neighbours of the given position and returns their coordinates.
 
         Args:
             pos tuple: The coordinates for the position to check.
 
         Returns:
-            list: A list of the neighbors coordinates.
+            list: A list of the neighbours coordinates.
         """
         row_i, col_i = pos
-        neighbors = []
+        neighbours = []
         if row_i > 0:
-            neighbors.append((row_i-1, col_i))
-        if row_i < self.n-1:
-            neighbors.append((row_i+1, col_i))
+            neighbours.append((row_i-1, col_i))
+        if row_i < image_size[1]-1:
+            neighbours.append((row_i+1, col_i))
         if col_i > 0:
-            neighbors.append((row_i, col_i-1))
-        if col_i < self.n-1:
-            neighbors.append((row_i, col_i+1))
-        return neighbors
+            neighbours.append((row_i, col_i-1))
+        if col_i < image_size[0]-1:
+            neighbours.append((row_i, col_i+1))
+        random.shuffle(neighbours)
+        return neighbours
 
-    def pick_color(self, neighbors, image):
-        """This function decides the color to be assigned to the current position based on the colors of the neighbors.
+    def pick_color(self, a=None):
+        """This function decides the color to be assigned to the current position based on the colors of the neighbours.
 
         Args:
-            neighbors list: A list of the neighbors coordinates.
+            neighbours list: A list of the neighbours coordinates.
             image list: A 2d table representing the image to be generated.
 
         Returns:
             int: A color value.
         """
-        possibilities = {}
-        counter = {}
-        count = 0
-        #print(neighbors)
-        for neighbor in neighbors:
-            a = image[neighbor[0]][neighbor[1]]
-            #print(a)
-            if a == -1:
-                continue
-            
-            count+=1
-            for b in range(self.n):
-                if (b not in counter):
-                    counter[b] = 1
-                else:
-                    counter[b] += 1
-                if (b not in possibilities):
-                    possibilities[b] = self.adj[a][b]
-                else:
-                    possibilities[b] *= (self.adj[a][b]*counter[b])
+        if a == None:
+            return random.randint(0, self.n-1)
+
+        colors = []
+        possibilities = []
+        for b, w in enumerate(self.adj[a]):
+            colors.append(b)
+            possibilities.append(w)
         
-    
-        
-        values = []
-        probs = ()
-        if len(possibilities) == 0:
-            rand_val = random.randint(0,self.n-1)
-        else:
-            for a in possibilities.keys():
-                values.append(a)
-                probs+=(int(possibilities[a]*100) ,)
-            
-            rand_val = random.choices(values, weights=probs, k=1)[0]
-            #print(rand_val)
-        
+        rand_val = random.choices(colors, weights=possibilities, k=1)[0]
         return rand_val
 
-    def generate_image(self):
+    def generate_image(self, image_size, BFS=False):
         """This is the main function for generating an image based on the chain.
         It uses BFS to traverse the image to be generated. The starting position is randomly picked.
         """
-        image = [None] * self.n
-        for r in range(self.n):
-            image[r] = [-1]*self.n
+        image = [None] * image_size[1]
+        for r in range(image_size[1]):
+            image[r] = [-1]*image_size[0]
 
-        start_pos = (random.randint(0, self.n-1), random.randint(0, self.n-1))
-        visited = {}
-        queue = Queue()
+        start_pos = (random.randint(0, image_size[0]-1), random.randint(0, image_size[1]-1))
+        #print(start_pos)
+        image[start_pos[0]][start_pos[1]] = self.pick_color()
+        if (BFS): #BFS
+            queue = Queue()
+            queue.add(start_pos)
+            while(queue.size>0):
+                pos = queue.pop()
+                neighbours = self.get_neighbours(pos, image_size)
+                for neighbour in neighbours:
+                    if image[neighbour[0]][neighbour[1]] != -1:
+                        continue
+                    queue.add(neighbour)
+                    image[neighbour[0]][neighbour[1]] = self.pick_color(image[pos[0]][pos[1]])
+                    
+
+        else: #DFS
+            stack = Stack()
+            stack.add(start_pos)
+            while(stack.size>0):
+                pos = stack.pop()
+                neighbours = self.get_neighbours(pos, image_size)
+                for neighbour in neighbours:
+                    if image[neighbour[0]][neighbour[1]] != -1:
+                        continue
+                    stack.add(neighbour)
+                    image[neighbour[0]][neighbour[1]] = self.pick_color(image[pos[0]][pos[1]])
+                    
+
                 
-        #BFS
-        visited[start_pos] = True
-        queue.add(start_pos)
-        while(queue.size>0):
-            #print("queue_size: " + str(queue.size))
-            #print("pop()")
-            pos = queue.pop()
-            neighbors = self.get_neighbors(pos)
-            image[pos[0]][pos[1]] = self.pick_color(neighbors, image)
-
-            for neighbor in neighbors:
-                if neighbor not in visited:
-                    visited[neighbor] = True
-                    #print("add: " + str(neighbor))
-                    queue.add(neighbor)
-        self.print_image(image)
+        return image
 
     def print_image(self, image):
         """This function prints the image to the console.
@@ -212,7 +217,7 @@ def add_to_graph(key, weights):
         weights[key] = 1
     return weights
 
-def collect_edges(image):
+def collect_edges(image, graph):
     """Collects the edges to be entered into the markov chain.
 
     Args:
@@ -220,7 +225,6 @@ def collect_edges(image):
     Returns:
         _type_: A list of edges.
     """
-    graph = []
     weights = {}
     for i, row in enumerate(image):
         for j, a in enumerate(row):
@@ -245,13 +249,47 @@ def collect_edges(image):
     return graph
         
 
+if __name__ == "__main__":
+    directory = "src/input"
+    graph=[]
+    rgb_dict = {}
+    rgb_list = []
+    print("Number of pictures: ", end="")
+    m_pictures = int(input())
+    print()
+    for file in os.listdir(directory):
+        if m_pictures == 0:
+            break
+        m_pictures-=1
+        im = Image.open(os.path.join(directory, file)).convert('RGB')
+        inp = [None]*im.size[1]
+        
+        for x in range(0,im.size[1]):
+            inp[x] = [None]*im.size[0]
+            for y in range(0,im.size[0]):
+                temp = im.getpixel((y,x))
+                rgb_val = (50 * round(temp[0]/50), 50 * round(temp[1]/50), 50 * round(temp[2]/50))
+                if (rgb_val not in rgb_dict):
+                    rgb_list.append(rgb_val)
+                    rgb_dict[rgb_val] = len(rgb_list)-1
+                
+                inp[x][y] = rgb_dict[rgb_val]
+        
+        graph = collect_edges(inp, graph)
 
+    print("Color diversity: " + str(len(rgb_list)))
 
-inp = [[0, 1, 0, 1], [2, 0, 2, 0], [0, 1, 0, 3], [2, 0, 2, 3]]
+    #inp = [[0, 1, 0, 1], [2, 0, 2, 0], [0, 1, 0, 3], [2, 0, 2, 3]]
 
-graph = collect_edges(inp)
+    
 
-new_chain = Chain(graph, len(inp))
-new_chain.print()
-print()
-new_chain.generate_image()
+    new_chain = Chain(graph, len(rgb_list))
+    #new_chain.print()
+    print()
+    table = new_chain.generate_image(im.size)
+    new_im = Image.new("RGB", im.size)
+    for x in range(0, len(table)):
+        for y in range(0, len(table[x])):
+            new_im.putpixel((y,x), rgb_list[table[x][y]])
+    new_im.show()
+
