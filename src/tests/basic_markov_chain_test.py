@@ -10,7 +10,8 @@ class TestChain(unittest.TestCase):
         graph = [None]*self.n
         for  i in range(self.n):
             graph[i] = [random.randint(0,self.n-1)]*self.n
-        self.edges = collect_edges(graph)
+        self.edges = []
+        self.edges = collect_edges(graph, self.edges)
 
         #Generates a markov chain from the weighted edges.
         self.new_chain = Chain(self.edges, self.n)
