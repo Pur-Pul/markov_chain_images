@@ -28,3 +28,9 @@ This algorithm is good at generating images of the same color palette and color 
 The algorithm can be improved to take all 8 surrounding neighbours into account (right now it only takes the 4 direct neighbours), as well as taking the directions of the neighbours into account.  
 
 Example: the probability of a blue pixel being next to a red pixel is the following: markov_chain[red][blue] = [0.2, 0, 0.6, 0.5], where each decimal in the list represents a different direction from the red pixel.
+
+This week I learned how to use Pillow for image input and output, as well as how to generate image files. 
+
+One problem I have at the moment is the efficiency of the algorithm. Because it is innefficient, it has to compress the colors of the source image to make the program work in an acceplable time. I will need to optimize the algorithm to be able to handle a wider range of colors at once and also make it work on larger images. At the moment HD quality images and larger take a very long time to process.
+
+Hours used this week: 6
