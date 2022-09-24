@@ -1,6 +1,9 @@
 ## Links:    
 [Project specification](Documentation/project_specification.md)  
+[Testing document](Documentation/testing_document.md)  
 [Week report 1](Documentation/week_1_report.md)  
+[Week report 2](Documentation/week_2_report.md)  
+[Week report 3](Documentation/week_3_report.md)  
 
 ## Instructions
 This application was made using python 3.8
