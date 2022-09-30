@@ -5,71 +5,136 @@ from basic_markov_chain import collect_edges
 
 class TestChain(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         #Generates a list of weighted edges, where the weight corresponds to the frequency of said edge.
-        self.n = random.randint(2,10)
-        graph = [None]*self.n
-        for  i in range(self.n):
-            graph[i] = [random.randint(0,self.n-1)]*self.n
+        graph = [
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7]
+        ]
         self.edges = []
         self.edges = collect_edges(graph, self.edges)
 
         #Generates a markov chain from the weighted edges.
-        self.new_chain = Chain(self.edges, self.n)
+        self.new_chain = Chain(self.edges, 8)
 
     def test_possibilities_are_calculated_properly(self):
-        edge_count = {}
-        frequency = {}
-        for i in range(self.n):
-            edge_count[i] = 0
-            for j in range(self.n):
-                frequency[(i,j)] = 0
-        for i in self.edges:
-            frequency[(i[0],i[1])] = i[2]
-            if i[0] in edge_count:
-                edge_count[i[0]] += i[2]
-            else:
-                edge_count[i[0]] = i[2]
-        
-        adj_template = [None]*self.n
-        for a in range(self.n):
-            adj_template[a] = [None]*self.n
-            for b in range(self.n):
-                if (edge_count[a]) > 0:
-                    adj_template[a][b] = frequency[(a,b)]/edge_count[a]
-                else:
-                    adj_template[a][b] = frequency[(a,b)]
+        adj_template = [
+            #a 0
+            [
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 0
+                [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 1
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 2
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 3
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 4
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 5
+                [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 6
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0]  #dir 7
+            ],
+            #a 1
+            [
+                [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 0
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 1
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 2
+                [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 3
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 4
+                [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 5
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 6
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0]  #dir 7
+            ],
+            #a 2
+            [
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 0
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 1
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 2
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 3
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 4
+                [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 5
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 6
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0]  #dir 7
+            ],
+            #a 3
+            [
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 0
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 1
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 2
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 3
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 4
+                [0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], #dir 5
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 6
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0]  #dir 7
+            ],
+            #a 4
+            [
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 0
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 1
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 2
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 3
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 4
+                [0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], #dir 5
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 6
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0]  #dir 7
+            ],
+            #a 5
+            [
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 0
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 1
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 2
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 3
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 4
+                [0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], #dir 5
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 6
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0]  #dir 7
+            ],
+            #a 6
+            [
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 0
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 1
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], #dir 2
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 3
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], #dir 4
+                [0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], #dir 5
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 6
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0]  #dir 7
+            ],
+            #a 7
+            [
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 0
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], #dir 1
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 2
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 3
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 4
+                [0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], #dir 5
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], #dir 6
+                [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]  #dir 7
+            ]
+        ]
+
+
         self.assertEqual(adj_template, self.new_chain.adj)
     
     def test_neighbours_collected(self):
-        image_size = (100, 100)
-        
-        template = []
         ans = []
-        i=0
-        while(True):
-            pos = (random.randint(0, image_size[0]), random.randint(0, image_size[1]))
-            ans = self.new_chain.get_neighbours(pos, image_size)
-            row_i, col_i = pos
-            template = []
-            if row_i > 0:
-                template.append((row_i-1, col_i))
-            if row_i < image_size[1]-1:
-                template.append((row_i+1, col_i))
-            if col_i > 0:
-                template.append((row_i, col_i-1))
-            if col_i < image_size[0]-1:
-                template.append((row_i, col_i+1))
-            if (template != ans or i > 10):
-                break
-            i+=1
-        
+        ans.append(self.new_chain.get_neighbours((0,0), (8,8), True))
+        ans.append(self.new_chain.get_neighbours((0,7), (8,8), True))
+        ans.append(self.new_chain.get_neighbours((7,0), (8,8), True))
+        ans.append(self.new_chain.get_neighbours((7,7), (8,8), True))
+        ans.append(self.new_chain.get_neighbours((4,4), (8,8), True))
+
+        template = [
+            [(0,1),(1,0),(1,1)],
+            [(0,6),(1,6),(1,7)],
+            [(6,0),(6,1),(7,1)],
+            [(6,6),(6,7),(7,6)],
+            [(3,3),(3,4),(3,5),(4,3),(4,5),(5,3),(5,4),(5,5)]
+        ]
+            
         self.assertNotEqual(template, ans)
-        
-        
-        ans.sort()
-        template.sort()
+        for i in range(len(ans)): 
+            ans[i].sort()
         self.assertEqual(template, ans)
-
-
-
-
