@@ -18,41 +18,6 @@ class Node:
         self.value = value
         self.next = None
 
-class Queue:
-    def __init__(self):
-        """This is the class for the queue used in BFS.
-        Args:
-            f_node Node: Points to the first node in the queue.
-            size int: Keeps track of the length of the queue.
-            end Node: Points to the last node in the queue
-        """
-        self.f_node = None
-        self.size = 0
-        self.end = None
-    def add(self, value):
-        """Assign the value to a new node and adds it to the end of the queue
-
-        Args:
-            value (_type_): The value of the node.
-        """
-        new_node = Node(value)
-        if self.f_node is None:
-            self.f_node = self.end = new_node
-        else:
-            self.end.next = new_node
-            self.end = new_node
-        self.size += 1
-    def pop(self):
-        """Pops the first node from the queue and returns its value.
-
-        Returns:
-            value: The value of the popped node.
-        """
-        to_return = self.f_node.value
-        self.f_node = self.f_node.next
-        self.size -= 1
-        return to_return
-
 class Stack:
     def __init__(self):
         self.f_node = None
@@ -262,7 +227,7 @@ def collect_edges(image, graph):
                 directions.append((i-1,j+1,direction_map[0][2]))
             
             if i < len(image) -1 and j > 0: #check color bottom left
-                directions.append((i+1,j-1,direction_map[2][0]))
+                directions.append((i+1,j-1,direction_map[2][0])) 
             
             if i < len(image) -1 and j < len(row) -1: #check color bottom right
                 directions.append((i+1,j+1,direction_map[2][2]))
