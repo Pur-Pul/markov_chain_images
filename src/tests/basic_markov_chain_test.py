@@ -19,12 +19,7 @@ class TestChain(unittest.TestCase):
         ]
         self.edges = []
         self.edges = collect_edges(graph, self.edges)
-
-        #Generates a markov chain from the weighted edges.
-        self.new_chain = Chain(self.edges, 8)
-
-    def test_possibilities_are_calculated_properly(self):
-        adj_template = [
+        self.adj_template = [
             #a 0
             [
                 [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], #dir 0
@@ -115,8 +110,11 @@ class TestChain(unittest.TestCase):
             ]
         ]
 
+        #Generates a markov chain from the weighted edges.
+        self.new_chain = Chain(self.edges, 8)
 
-        self.assertEqual(adj_template, self.new_chain.adj)
+    def test_possibilities_are_calculated_properly(self):
+        self.assertEqual(self.adj_template, self.new_chain.adj)
     
     def test_neighbours_collected(self):
         ans = []
@@ -138,3 +136,13 @@ class TestChain(unittest.TestCase):
         for i in range(len(ans)): 
             ans[i].sort()
         self.assertEqual(template, ans)
+
+    def test_color_selected_properly(self):
+        ans = []
+        for i in range(0,7):
+            for dir in range(0,7):
+                c = self.new_chain.pick_color(i, dir)
+                if c >= 0:
+                    ans.append((self.adj_template[i][dir][c] > 0, i, dir, c))
+        for a in ans:
+            self.assertEqual((True, a[1], a[2], a[3]), a)

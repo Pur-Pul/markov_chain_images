@@ -9,20 +9,27 @@ direction_map = [   [0, 1, 2],
 
 class Node:
     def __init__(self, value):
-        """This the class for the nodes used in the queue.
+        """This the class for the nodes used in the Stack.
 
         Args:
             value (_type_): The value of the node.
-            next (_type_): Points to the next node in the queue.
+            next (_type_): Points to the next node in the Stack.
         """
         self.value = value
         self.next = None
 
 class Stack:
     def __init__(self):
+        """This is the class for the Stack used in the depth-first traversal.
+        """
         self.f_node = None
         self.size = 0
     def add(self, value):
+        """This function adds a new Node to the top of the stack.
+
+        Args:
+            value: The value of the node added.
+        """
         new_node = Node(value)
         if self.f_node is None:
             self.f_node = new_node
@@ -31,6 +38,11 @@ class Stack:
             self.f_node = new_node
         self.size += 1
     def pop(self):
+        """This function pops the top element from the stack.
+
+        Returns:
+            to_return: The value of the popped Node.
+        """
         to_return = self.f_node.value
         self.f_node = self.f_node.next
         self.size -= 1
@@ -41,10 +53,9 @@ class Chain:
         """This is the class for the markov chain.
 
         Args:
-            edges (_type_): A list of tuples, that contain edges and their weight.
+            graph (_type_): A list of tuples, that contain edges and their weight.
             The weights are the frequency of the edges.
-            n int: The number of rows in the image and the max number colors allowed in the image.
-            This will be changed later, so that more colors can be used in each image.
+            color_n int: The number of colors to be used in the markov chain.
         """
         self.color_n = color_n
         self.adj = [None] * color_n
@@ -78,9 +89,13 @@ class Chain:
 
         Args:
             pos tuple: The coordinates for the position to check.
+            image_size: A tuple containg height and width of the image to be generated.
+            eight_neighbours (Boolean): A boolean value that decides whether to only take the direct 4 neighbours into account
+            or the surrounding 8.
 
         Returns:
-            list: A list of the neighbours coordinates.
+            neighbours: A list containg coordinates for the neighbouring pixels to be processed.
+            The list has been shuffled to avoid a clear directional pattern in the generated image.
         """
         row_i, col_i = pos
         neighbours = []
@@ -106,30 +121,30 @@ class Chain:
         random.shuffle(neighbours)
         return neighbours
 
-    def pick_color(self, color_a=None, pos_dif=None):
-        """This function decides the color to be assigned to the current position,
-        based on the colors of the neighbours.
+    def pick_color(self, color_a=None, dir=None):
+        """This function decides the color for the next pixel based on the color of the current pixel
+        and directional relation between the the two pixels.
 
         Args:
-            neighbours list: A list of the neighbours coordinates.
-            image list: A 2d table representing the image to be generated.
+            color_a: The index of the color value of the current pixel.
+            dir: The index of the direction of the next pixel from the current one.
 
         Returns:
-            int: A color value.
+            int: A color value that has been randomly selected based on the weights of a markov chain.
         """
         if color_a is None:
             return random.randint(0, self.color_n-1)
 
-        
-
-        dir = direction_map[pos_dif[0]+1][pos_dif[1]+1]
-        
         colors = []
         possibilities = []
+        largest=0
         for color_b, weight in enumerate(self.adj[color_a][dir]):
+            largest = max(largest, weight)
             colors.append(color_b)
             possibilities.append(weight)
-            
+        
+        if largest == 0:
+            return -1
 
         rand_val = random.choices(colors, weights=possibilities, k=1)[0]
         return rand_val
@@ -155,7 +170,8 @@ class Chain:
                 if image[neighbour[0]][neighbour[1]] != -1:
                     continue
                 stack.add(neighbour)
-                image[neighbour[0]][neighbour[1]] = self.pick_color(image[pos[0]][pos[1]], (neighbour[0]-pos[0], neighbour[1]-pos[1]))
+                dir = direction_map[neighbour[0]-pos[0]+1][neighbour[1]-pos[1]+1]
+                image[neighbour[0]][neighbour[1]] = self.pick_color(image[pos[0]][pos[1]], dir)
 
         return image
 
@@ -243,6 +259,15 @@ def collect_edges(image, graph):
     return graph
 
 def read_image(file_name):
+    """Reads an image from the input directory and returns a 2D table containing RGB values.
+
+    Args:
+        file_name String: The name of the file to bea read.
+
+    Returns:
+        inp: A 2d table conntaing color information about each pixel.
+        The color values have been compressed to improve the runtime.
+    """
     im = Image.open(os.path.join(directory, file_name)).convert('RGB')
     inp = [None]*im.size[1]
     for x in range(0,im.size[1]):
