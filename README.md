@@ -21,7 +21,7 @@ After that images that are found in src/input will be listed in the terminal. Th
 
 Next you need to enter the file name of the image to use. If multiple images are to be used, the program will ask over and over. Make sure you spell the filename as it is displayed in the terminal, with filetype included.
 
-Nxt you need to give width and hight in pixels for the image to be generated. 
+Next you need to give width and hight in pixels for the image to be generated. 
 
 Lastly you get to choose between 4 or 8 neighbour mode. This affects how many neighbouring pixels the program takes into account when generating the image. 8 neighbours is more detailed but takes longer.
 
