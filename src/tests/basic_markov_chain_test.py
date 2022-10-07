@@ -1,7 +1,6 @@
 import unittest
-import random
-from basic_markov_chain import Chain
-from basic_markov_chain import collect_edges
+from services import Chain
+from main import Main
 
 class TestChain(unittest.TestCase):
     def setUp(self):
@@ -17,8 +16,9 @@ class TestChain(unittest.TestCase):
             [0,1,2,3,4,5,6,7],
             [0,1,2,3,4,5,6,7]
         ]
+        self.root = Main()
         self.edges = []
-        self.edges = collect_edges(graph, self.edges)
+        self.edges = self.root.collect_edges(graph, self.edges)
         self.adj_template = [
             #a 0
             [
@@ -111,7 +111,7 @@ class TestChain(unittest.TestCase):
         ]
 
         #Generates a markov chain from the weighted edges.
-        self.new_chain = Chain(self.edges, 8)
+        self.new_chain = Chain(self.edges, 8, self.root.direction_map)
 
     def test_possibilities_are_calculated_properly(self):
         self.assertEqual(self.adj_template, self.new_chain.adj)
