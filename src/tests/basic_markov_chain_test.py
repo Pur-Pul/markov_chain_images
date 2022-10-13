@@ -139,6 +139,10 @@ class TestChain(unittest.TestCase):
 
     def test_color_selected_properly(self):
         ans = []
+        c = self.new_chain.pick_color()
+        ans.append((c in range(0, len(self.adj_template)), None, None, c))
+        
+        
         for i in range(0,7):
             for dir in range(0,7):
                 c = self.new_chain.pick_color(i, dir)
@@ -146,3 +150,14 @@ class TestChain(unittest.TestCase):
                     ans.append((self.adj_template[i][dir][c] > 0, i, dir, c))
         for a in ans:
             self.assertEqual((True, a[1], a[2], a[3]), a)
+
+    def test_generated_image_is_correct_size(self):
+        images = []
+        template = []
+        for i in range(50, 200, 50):
+            for j in range(50, 200, 50):
+                template.append((i,j))
+                image = self.new_chain.generate_image((i,j), True)
+                images.append((len(image[0]), len(image)))
+
+        self.assertEqual(images, template)
