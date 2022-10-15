@@ -4,7 +4,7 @@ from main import Main
 
 class TestChain(unittest.TestCase):
     def setUp(self):
-        self.maxDiff = None
+        #self.maxDiff = None
         #Generates a list of weighted edges, where the weight corresponds to the frequency of said edge.
         graph = [
             [0,1,2,3,4,5,6,7],
@@ -111,18 +111,18 @@ class TestChain(unittest.TestCase):
         ]
 
         #Generates a markov chain from the weighted edges.
-        self.new_chain = Chain(self.edges, 8, self.root.direction_map)
+        self.new_chain = Chain(self.edges, 8, self.root.direction_map, 8, None)
 
     def test_possibilities_are_calculated_properly(self):
         self.assertEqual(self.adj_template, self.new_chain.adj)
     
     def test_neighbours_collected(self):
         ans = []
-        ans.append(self.new_chain.get_neighbours((0,0), (8,8), True))
-        ans.append(self.new_chain.get_neighbours((0,7), (8,8), True))
-        ans.append(self.new_chain.get_neighbours((7,0), (8,8), True))
-        ans.append(self.new_chain.get_neighbours((7,7), (8,8), True))
-        ans.append(self.new_chain.get_neighbours((4,4), (8,8), True))
+        ans.append(self.new_chain.get_neighbours((0,0), (8,8)))
+        ans.append(self.new_chain.get_neighbours((0,7), (8,8)))
+        ans.append(self.new_chain.get_neighbours((7,0), (8,8)))
+        ans.append(self.new_chain.get_neighbours((7,7), (8,8)))
+        ans.append(self.new_chain.get_neighbours((4,4), (8,8)))
 
         template = [
             [(0,1),(1,0),(1,1)],
@@ -157,7 +157,7 @@ class TestChain(unittest.TestCase):
         for i in range(50, 200, 50):
             for j in range(50, 200, 50):
                 template.append((i,j))
-                image = self.new_chain.generate_image((i,j), True)
+                image = self.new_chain.generate_image((i,j))
                 images.append((len(image[0]), len(image)))
 
         self.assertEqual(images, template)
