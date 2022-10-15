@@ -1,8 +1,9 @@
 import random
 from entities import Stack
+from entities import Trie
 
 class Chain:
-    def __init__(self, graph, color_n, dir_map):
+    def __init__(self, graph, color_n, dir_map, number_of_neighbours, trie : Trie):
         """This is the class for the markov chain.
 
         Args:
@@ -12,25 +13,29 @@ class Chain:
         """
         self.dir_map = dir_map
         self.color_n = color_n
-        self.adj = [None] * color_n
-        self.lengths = [None] * color_n
-        for i in range(color_n):
-            self.lengths[i] = [0] * 8
-            self.adj[i] = [None] * 8
-            for dir in range(0, 8):
-                self.adj[i][dir] = [0] * color_n
+        self.neighbour_n = number_of_neighbours
+        self.trie = trie
 
-        for (color_a, color_b, dir, weight) in graph:
-            self.adj[color_a][dir][color_b] = weight
-            self.lengths[color_a][dir] += weight
+        if not trie:
+            self.adj = [None] * color_n
+            self.lengths = [None] * color_n
+            
+            for i in range(color_n):
+                self.lengths[i] = [0] * self.neighbour_n
+                self.adj[i] = [None] * self.neighbour_n
+                for dir in range(0, self.neighbour_n):
+                    self.adj[i][dir] = [0] * color_n
 
-        self.calculate_possibities()
+            for (color_a, color_b, dir, weight) in graph:
+                self.adj[color_a][dir][color_b] = weight
+                self.lengths[color_a][dir] += weight
+            self.calculate_possibities()
 
     def calculate_possibities(self):
         """Redefines the weights of the edges to a percentage instead of frequency.
         """
         for color_a in range(self.color_n):
-            for dir in range(0, 8):
+            for dir in range(0, self.neighbour_n):
                 for color_b in range(self.color_n):
                     if self.lengths[color_a][dir] == 0:
                         self.adj[color_a][dir][color_b] = 0.0
@@ -38,14 +43,12 @@ class Chain:
                     
                     self.adj[color_a][dir][color_b] /= self.lengths[color_a][dir]
 
-    def get_neighbours(self, pos, image_size, eight_neighbours):
+    def get_neighbours(self, pos, image_size):
         """Checks neighbours of the given position and returns their coordinates.
 
         Args:
             pos tuple: The coordinates for the position to check.
             image_size: A tuple containg height and width of the image to be generated.
-            eight_neighbours (Boolean): A boolean value that decides whether to only take the direct 4 neighbours into account
-            or the surrounding 8.
 
         Returns:
             neighbours: A list containg coordinates for the neighbouring pixels to be processed.
@@ -62,7 +65,7 @@ class Chain:
         if col_i < image_size[0]-1:
             neighbours.append((row_i, col_i+1))
         
-        if(eight_neighbours):
+        if(self.neighbour_n == 8):
             if row_i > 0 and col_i > 0:
                 neighbours.append((row_i-1, col_i-1))
             if row_i > 0 and col_i < image_size[0]-1:
@@ -88,22 +91,28 @@ class Chain:
         """
         if color_a is None:
             return random.randint(0, self.color_n-1)
-
-        colors = []
-        possibilities = []
-        largest=0
-        for color_b, weight in enumerate(self.adj[color_a][dir]):
-            largest = max(largest, weight)
-            colors.append(color_b)
-            possibilities.append(weight)
         
-        if largest == 0:
-            return -1
+        if not self.trie:
+            colors = []
+            possibilities = []
+            largest=0
+            for color_b, weight in enumerate(self.adj[color_a][dir]):
+                largest = max(largest, weight)
+                colors.append(color_b)
+                possibilities.append(weight)
+            
+            if largest == 0:
+                return -1
 
-        rand_val = random.choices(colors, weights=possibilities, k=1)[0]
+            rand_val = random.choices(colors, weights=possibilities, k=1)[0]
+        else:
+            list = self.trie.color_frequency_list(color_a, dir)
+            rand_val = random.choices(list[0], weights=list[1], k=1)[0]
+            if rand_val == -1:
+                 return random.randint(0, self.color_n-1)
         return rand_val
 
-    def generate_image(self, image_size, large_sample):
+    def generate_image(self, image_size):
         """This is the main function for generating an image based on the chain.
         It uses DFS to traverse the image to be generated. The starting position is randomly picked.
         """
@@ -112,14 +121,13 @@ class Chain:
             image[row] = [-1]*image_size[0]
 
         start_pos = (random.randint(0, image_size[1]-1), random.randint(0, image_size[0]-1))
-        #print(start_pos)
         image[start_pos[0]][start_pos[1]] = self.pick_color()
 
         stack = Stack()
         stack.add(start_pos)
         while stack.size>0:
             pos = stack.pop()
-            neighbours = self.get_neighbours(pos, image_size, large_sample)
+            neighbours = self.get_neighbours(pos, image_size)
             for neighbour in neighbours:
                 if image[neighbour[0]][neighbour[1]] != -1:
                     continue
@@ -140,9 +148,9 @@ class Chain:
                 print(color, end=", ")
             print()
 
-    def print(self):
-        for color_a in range(self.color_n):
-            for dir in range(0,8):
-                for color_b in range(self.color_n):
-                    weight = self.adj[color_a][dir][color_b]
-                    print("(" + str(color_a) + "," + str(color_b) + ")" + " : " + str(weight))
+#    def print(self):
+#        for color_a in range(self.color_n):
+#            for dir in range(0,self.neighbour_n):
+#                for color_b in range(self.color_n):
+#                    weight = self.adj[color_a][dir][color_b]
+#                    print("(" + str(color_a) + "," + str(color_b) + ")" + " : " + str(weight))
