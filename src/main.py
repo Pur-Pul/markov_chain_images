@@ -28,7 +28,7 @@ class Main():
     
     def inp(self, prompt, regex):
         i = input(prompt)
-        while not re.search(regex, i):
+        while not re.fullmatch(regex, i):
             print("Invalid input.")
             i = input(prompt)
         return i
@@ -37,22 +37,22 @@ class Main():
         """Collects inputs and calls the markovchain.
         Lastly it shows the generated image.
         """
-        picture_number = int(self.inp("Number of input pictures: ", "[1-9]+\d*"))
-        self.neighbour_n = int(self.inp("Number of neighbours (8/4): ", "8|4"))
-        self.use_trie = (self.inp("Use trie? (Y/N): ", "[Yy]|[Nn]").lower() == "y")
+        picture_number = int(self.inp("Number of input pictures: ", r"^[1-9]+\d*$"))
+        self.neighbour_n = int(self.inp("Number of neighbours (8/4): ", r"^8|4$"))
+        self.use_trie = (self.inp("Use trie? (Y/N): ", r"^[Yy]|[Nn]$").lower() == "y")
         if self.use_trie:
             self.trie = Trie()
         
         print("\nPictures found: ")
-        files = ""
+        files = "^"
         for file in os.listdir(self.directory):
             print(file)
-            files+=file+"|"
-        files = files[0:-2]
-        print()
+            files+=re.escape(file)+"|"
+        files = files[:-1]+"$"
+        print(files)
         for _ in range(picture_number):
             picture_name = self.inp("Enter picture name: ", files)
-            self.compression = int(self.inp("Color compression value (50 recomended): ", "[1-9]+\d*"))
+            self.compression = int(self.inp("Color compression value (50 recomended): ", r"^[1-9]+\d*$"))
             if self.use_trie:
                 self.train_trie(self.read_image(picture_name))
             else:
@@ -60,8 +60,8 @@ class Main():
 
         print("Color diversity: " + str(len(self.rgb_list)))
 
-        image_width = int(self.inp("Enter width of new image: ", "[2-9]|[1-9]\d+"))
-        image_height = int(self.inp("Enter height of new image: ", "[2-9]|[1-9]\d+"))
+        image_width = int(self.inp("Enter width of new image: ", r"^[2-9]|[1-9]\d+$"))
+        image_height = int(self.inp("Enter height of new image: ", r"^[2-9]|[1-9]\d+$"))
         
         new_chain = Chain(self.edges, len(self.rgb_list), self.direction_map, self.neighbour_n, self.trie)
 
