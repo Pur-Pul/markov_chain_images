@@ -17,6 +17,7 @@ class TestChain(unittest.TestCase):
             [0,1,2,3,4,5,6,7]
         ]
         self.root = Main()
+        self.root.neighbour_n = 8
         self.edges = []
         self.edges = self.root.collect_edges(graph, self.edges)
         self.adj_template = [
@@ -111,7 +112,7 @@ class TestChain(unittest.TestCase):
         ]
 
         #Generates a markov chain from the weighted edges.
-        self.new_chain = Chain(self.edges, 8, self.root.direction_map, 8, None)
+        self.new_chain = Chain(self.edges, 8, self.root.direction_map, 8)
 
     def test_possibilities_are_calculated_properly(self):
         self.assertEqual(self.adj_template, self.new_chain.adj)

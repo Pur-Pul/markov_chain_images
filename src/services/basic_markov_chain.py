@@ -3,7 +3,7 @@ from entities import Stack
 from entities import Trie
 
 class Chain:
-    def __init__(self, graph, color_n, dir_map, number_of_neighbours, trie : Trie):
+    def __init__(self, graph, color_n, dir_map, number_of_neighbours, trie = None):
         """This is the class for the markov chain.
 
         Args:
@@ -15,8 +15,9 @@ class Chain:
         self.color_n = color_n
         self.neighbour_n = number_of_neighbours
         self.trie = trie
+        self.adj = None
 
-        if not trie:
+        if self.trie is None:
             self.adj = [None] * color_n
             self.lengths = [None] * color_n
             
@@ -92,7 +93,7 @@ class Chain:
         if color_a is None:
             return random.randint(0, self.color_n-1)
         
-        if not self.trie:
+        if self.trie is None:
             colors = []
             possibilities = []
             largest=0

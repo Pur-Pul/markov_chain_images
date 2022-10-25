@@ -168,7 +168,7 @@ class Main():
         """Reads an image from the input directory and returns a 2D table containing RGB values.
 
         Args:
-            file_name String: The name of the file to bea read.
+            file_name String: The name of the file to be read.
 
         Returns:
             inp: A 2d table conntaing color information about each pixel.
