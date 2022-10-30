@@ -66,7 +66,7 @@ class Chain:
         if col_i < image_size[0]-1:
             neighbours.append((row_i, col_i+1))
 
-        if self.neighbour_n == 4:
+        if self.neighbour_n == 8:
             if row_i > 0 and col_i > 0:
                 neighbours.append((row_i-1, col_i-1))
             if row_i > 0 and col_i < image_size[0]-1:

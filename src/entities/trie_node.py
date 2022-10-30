@@ -3,7 +3,7 @@ class TrieNode:
         self.next = [{},{},{},{},{},{},{},{}]
         self.color = color
     def add_node(self, node, direction):
-        if node not in self.next:
+        if node not in self.next[direction]:
             self.next[direction][node] = 1
         else:
             self.next[direction][node] += 1
