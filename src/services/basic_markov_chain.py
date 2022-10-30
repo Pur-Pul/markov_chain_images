@@ -6,9 +6,12 @@ class Chain:
         """This is the class for the markov chain.
 
         Args:
-            graph (_type_): A list of tuples, that contain edges and their weight.
+            graph : A list of tuples, that contain edges and their weight.
             The weights are the frequency of the edges.
-            color_n int: The number of colors to be used in the markov chain.
+            color_n (int): The number of colors to be used in the markov chain.
+            dir_map : A 3x3 table containing the indices for each direction from the center.
+            number_of_neighbours : The number of directions to consider.
+            trie : The trie containign the markov chain. None if not used.
         """
         self.dir_map = dir_map
         self.color_n = color_n
@@ -48,7 +51,7 @@ class Chain:
         """Checks neighbours of the given position and returns their coordinates.
 
         Args:
-            pos tuple: The coordinates for the position to check.
+            pos: The coordinates for the position to check.
             image_size: A tuple containg height and width of the image to be generated.
 
         Returns:
@@ -85,7 +88,7 @@ class Chain:
 
         Args:
             color_a: The index of the color value of the current pixel.
-            dir: The index of the direction of the next pixel from the current one.
+            direction: The index of the direction of the next pixel from the current one.
 
         Returns:
             int: A color value that has been randomly selected based on the weights.

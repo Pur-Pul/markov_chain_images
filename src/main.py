@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from PIL import Image
 from services import Chain
 from entities import Trie
@@ -22,7 +23,6 @@ class Main():
                     which defines how many neighbour nodes to take into account in the markov chain.
                 compression : An integer value that is used to round the color values to.
                     Larger compression value, less unique colors. 1 means no compression.
-                use_trie : A boolean which if set to True makes the program use a trie instead.
                 trie : This variable stores the trie object.
 
         """
@@ -64,7 +64,6 @@ class Main():
         If use trie was set to True, a Trie will be used to train the markov chain.
         Lastly it shows the generated image.
         """
-        picture_number = int(self.inp("Number of input pictures: ", r"^[1-9]+\d*$"))
         self.neighbour_n = int(self.inp("Number of neighbours (8/4): ", r"^8|4$"))
         if self.inp("Use trie? (Y/N): ", r"^[Yy]|[Nn]$").lower() == "y":
             self.trie = Trie()
@@ -75,18 +74,8 @@ class Main():
             print(file)
             files+=re.escape(file)+"|"
         files = files[:-1]+"$"
-        for _ in range(picture_number):
-            image = self.read_image(self.inp("Enter picture name: ", files))
-            if self.trie is not None:
-                self.train_trie(image)
-            else:
-                self.edges = self.collect_edges(image, self.edges)
-
-        image_width, image_height = (
-            int(self.inp("Enter width of new image: ", r"^[2-9]|[1-9]\d+$")),
-            int(self.inp("Enter height of new image: ", r"^[2-9]|[1-9]\d+$"))
-        )
-
+        training_time = self.read_images(files)
+        start_time = time.time()
         new_chain = Chain(
             self.edges,
             len(self.rgb_list),
@@ -94,8 +83,20 @@ class Main():
             self.neighbour_n,
             self.trie
         )
+        print(
+            "Markov chain trained in " +
+            str(training_time + (time.time()-start_time))+
+            " seconds."
+        )
 
+        image_width, image_height = (
+            int(self.inp("Enter width of new image: ", r"^[2-9]|[1-9]\d+$")),
+            int(self.inp("Enter height of new image: ", r"^[2-9]|[1-9]\d+$"))
+        )
+
+        start_time = time.time()
         table = new_chain.generate_image((image_width, image_height))
+        print("Image generated in " + str(time.time()-start_time)+" seconds.")
         new_im = Image.new("RGB", (image_width, image_height))
         for i, row in enumerate(table):
             for j, col in enumerate(row):
@@ -246,6 +247,28 @@ class Main():
                 if i < len(image) -1 and j < len(row) -1: #check color bottom right
                     self.trie.add_edge(color_a, image[i+1][j+1], self.direction_map[2][2])
 
+    def read_images(self, files):
+        """This function selects the images to read based on user input.
+        It also initiates the training of the markov chain for each image.
+
+        Args:
+            files (list): A list containing the file names of the files in the input folder.
+
+        Returns:
+            time: The time it took to train the markov chain.
+        """
+        picture_number = int(self.inp("Number of input pictures: ", r"^[1-9]+\d*$"))
+        total_time = 0
+        for _ in range(picture_number):
+            image = self.read_image(self.inp("Enter picture name: ", files))
+            start_time = time.time()
+            if self.trie is not None:
+                self.train_trie(image)
+            else:
+                self.edges = self.collect_edges(image, self.edges)
+            total_time+=time.time()-start_time
+        return total_time
+
     def read_image(self, file_name):
         """Reads an image from the input directory and returns a 2D table containing RGB values.
 
@@ -264,6 +287,7 @@ class Main():
                     "Color compression value ("+ rec +" recomended): ",
                     r"^[1-9]+\d*$")
                 )
+        start_time = time.time()
         image = Image.open(os.path.join(self.directory, file_name)).convert('RGB')
         inp = [None]*image.size[1]
         for i in range(0,image.size[1]):
@@ -280,6 +304,7 @@ class Main():
                     self.rgb_dict[rgb_val] = len(self.rgb_list)-1
 
                 inp[i][j] = self.rgb_dict[rgb_val]
+        print("Image file read in " + str(time.time()-start_time) + " seconds.")
         print("Color diversity: " + str(len(self.rgb_list)))
         return inp
 
