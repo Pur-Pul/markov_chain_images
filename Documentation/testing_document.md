@@ -32,6 +32,8 @@ The node dict keeps track of the individual nodes and is used to get the node ob
 ### test_color_frequency_list_returns_correct_value
 Checks if the color_frequency_list function returns the correct value.
 
+A simple performance test is implemented in the form of a timer when the markov chain is trained and the image generated during normal usage.
+
 [Coverage report](/htmlcov/index.html)
 If the coverage report does not exist, generate it using:  
 ```bash
