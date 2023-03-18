@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+    <form action="/generate" method="POST">
+        {% for image in images %}
+            <label for="{{ image.title }}">{{ image.title }}</label>
+            <input type="checkbox" id="{{ image.title }}" name="image_{{ image.title }}" value="{{ image.title }}"><br>
+        {% endfor %}
+        
+        <label for="n">Limit to 4 neighbors?</label>
+        <input type="checkbox" id="n" name="Number of neighbours (8/4): " value="4"><br>
+        
+        <label for="trie">Use trie?</label>
+        <input type="checkbox" id="trie" name="Use trie? (Y/N): " value="Y"><br>
+
+        <label for="width">Width: </label>
+        <input type="number" id="width" name="Enter width of new image: " value="32"><br>
+
+        <label for="height">Height: </label>
+        <input type="number" id="height" name="Enter height of new image: " value="32"><br>
+
+        <label for="compression">Compression: </label>
+        <input type="number" id="compression" name="Color compression value: " value="1"><br>
+        
+        <input type="submit" value="Generate image">
+    </form>
+</html>

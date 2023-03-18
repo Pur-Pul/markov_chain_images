@@ -97,10 +97,14 @@ class Main():
         start_time = time.time()
         table = new_chain.generate_image((image_width, image_height))
         print("Image generated in " + str(time.time()-start_time)+" seconds.")
+        self.generate_image(table, image_width, image_height)
+
+    def generate_image(self, table, image_width, image_height):
         new_im = Image.new("RGB", (image_width, image_height))
         for i, row in enumerate(table):
             for j, col in enumerate(row):
                 new_im.putpixel((j,i), self.rgb_list[col])
+        self.show_image(new_im)
         new_im.show()
 
     def add_to_graph(self, color_a, color_b, direction, weights):

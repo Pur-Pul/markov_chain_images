@@ -9,6 +9,8 @@ python = "^3.8"
 invoke = "^1.7.1"
 imageio = "^2.22.0"
 Pillow = "^9.2.0"
+flask = "^2.2.3"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"
