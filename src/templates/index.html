@@ -3,7 +3,8 @@
     <form action="/generate" method="POST">
         {% for image in images %}
             <label for="{{ image.title }}">{{ image.title }}</label>
-            <input type="checkbox" id="{{ image.title }}" name="image_{{ image.title }}" value="{{ image.title }}"><br>
+            <input type="checkbox" id="{{ image.title }}" name="image_{{ image.title }}" value="{{ image.title }}">
+            <a href="/template/{{ image.title }}">view</a><br>
         {% endfor %}
         
         <label for="n">Limit to 4 neighbors?</label>

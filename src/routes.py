@@ -43,7 +43,7 @@ class WebMain(Main):
 def index():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     images = []
-    for title in os.listdir(os.path.join(current_dir, "input")):
+    for title in os.listdir(os.path.join(current_dir, "static")):
         images.append(
             {
                 "title":title
@@ -71,3 +71,7 @@ def generate():
     markov = WebMain(inputs)
     markov.run()
     return render_template("image.html", data=markov.return_data)
+
+@app.route("/template/<image_name>", methods=["GET"])
+def template(image_name):
+    return render_template("template_image.html", image_name=image_name)

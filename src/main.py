@@ -33,7 +33,7 @@ class Main():
                             ]
 
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        self.directory = "input"
+        self.directory = "static"
         self.edges=[]
         self.rgb_dict = {}
         self.rgb_list = []
@@ -104,7 +104,6 @@ class Main():
         for i, row in enumerate(table):
             for j, col in enumerate(row):
                 new_im.putpixel((j,i), self.rgb_list[col])
-        self.show_image(new_im)
         new_im.show()
 
     def add_to_graph(self, color_a, color_b, direction, weights):
