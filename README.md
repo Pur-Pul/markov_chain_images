@@ -10,13 +10,31 @@
 
 ## Instructions
 This application was made using python 3.8
+
+## Installation using Docker
+Build the docker image using the following command:
+```bash
+docker build . -t markov_chain
+```
+
+And run the application using the following command:
+```bash
+docker run --rm -it -p 8080:8080 markov_chain
+```
+The application can then be closed with CTRL + C
+
+## Native installation
 Install by running the following command in the root folder:
 ```bash
 poetry install
 ```
-To start:
+To start the command line interface run:
 ```bash
-poetry run python src/main.py
+poetry run invoke start
+```
+or start the web application by running: 
+```bash
+poetry run invoke start --web
 ```
 in the root folder. Make sure you are using the correct python version.
 

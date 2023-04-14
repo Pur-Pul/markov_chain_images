@@ -1,0 +1,13 @@
+# flyctl launch added from .gitignore
+**\.env
+**\*__pycache__
+**\*.pytest_cache
+
+# flyctl launch added from .pytest_cache\.gitignore
+# Created by pytest automatically.
+.pytest_cache\**\*
+
+# flyctl launch added from htmlcov\.gitignore
+# Created by coverage.py
+htmlcov\**\*
+fly.toml

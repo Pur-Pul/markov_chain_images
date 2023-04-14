@@ -71,4 +71,3 @@ def generate():
     markov = WebMain(inputs)
     markov.run()
     return render_template("image.html", data=markov.return_data)
-

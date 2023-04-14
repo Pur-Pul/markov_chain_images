@@ -12,3 +12,11 @@ def coverage_report(ctx):
 @task
 def lint(ctx):
     ctx.run("pylint src")
+
+@task
+def start(ctx, web=False):
+    with ctx.cd("src"):
+        if web:
+            ctx.run("flask run --host 0.0.0.0 --port 8080")
+        else:
+            ctx.run("python main.py")
