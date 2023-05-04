@@ -7,7 +7,7 @@
 [Week report 3](Documentation/week_3_report.md)  
 [Week report 4](Documentation/week_4_report.md)  
 [Week report 5](Documentation/week_5_report.md)  
-
+[Deployed version](https://markov-chain.fly.dev/)
 ## Instructions
 This application was made using python 3.8
 
